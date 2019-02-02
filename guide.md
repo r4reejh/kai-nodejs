@@ -26,5 +26,5 @@ git push origin develop
 4. You can push to this repository itself, or fork, make changes there and make a pull request
 
 
-JSON Format: https://github.com/r4reejh/kai-nodejs/wiki/SDK-to-JSON-format
-Kai-dotnet: https://github.com/vicara-hq/kai-dotnet
+- JSON Format: https://github.com/r4reejh/kai-nodejs/wiki/SDK-to-JSON-format
+- Kai-dotnet: https://github.com/vicara-hq/kai-dotnet
