@@ -1,37 +1,44 @@
 import * as WebSocket from 'ws';
 import KaiEventEmitter from './KaiEventEmitter';
+import './KaiCapabilities';
 
 let ws: WebSocket;
 
-ws.on('open', () => {
-	// TODO:
-	// Test compartibility
-	// Send capabilities
-});
-
-ws.on('message', (data) => {
-	var input = JSON.parse(data.toString());
-	KaiEvents.emit('data', input);
-
-	if(input.success != true) {
-		KaiEvents.emit('error', {
-			errorCode: input.errorCode,
-			error: input.error,
-			message: input.message
-		});
-		return;
-	}
-
-	switch(input.type) {
-		case "gestureData":
-			KaiEvents.emit('gestureData', input.gesture);
-			break;
-		// TODO other types of data
-	}
-});
+function initListeners() {
+	ws.on('open', () => {
+		// TODO:
+		// Test compartibility
+		// Send capabilities
+		KaiEvents.emit('connected', 'connected');
+	});
+	
+	ws.on('message', (data) => {
+		var input = JSON.parse(data.toString());
+		KaiEvents.emit('data', input);
+	
+		if(input.success != true) {
+			KaiEvents.emit('error', {
+				errorCode: input.errorCode,
+				error: input.error,
+				message: input.message
+			});
+			return;
+		}
+	
+		switch(input.type) {
+			case "gestureData":
+				KaiEvents.emit('gestureData', input);
+				break;
+			case "authentication":
+				KaiEvents.emit('authentication', input);
+			// TODO other types of data
+		}
+	});
+}
 
 export function connect() {
 	ws = new WebSocket('ws://localhost:2203');
+	initListeners();
 }
 
 export function subscribe(...capabilities: KaiCapabilities[]) {
@@ -72,6 +79,10 @@ export function unsubscribe(...capabilities: KaiCapabilities[]) {
 				resolve();
 		});
 	});
+}
+
+export function disconnect() {
+	ws.close();
 }
 
 export const KaiEvents = new KaiEventEmitter();
